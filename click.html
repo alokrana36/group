@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Themed Image Box with Voice Assistant and Translator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #e8f5e9;
+            /* Light green background */
+        }
+
+        .container {
+            display: flex;
+            background: #ffffff;
+            /* White background for the container */
+            border: 1px solid #c8e6c9;
+            /* Light green border */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 128, 0, 0.2);
+            /* Green shadow */
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .image-box {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .image-box img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .text-box {
+            flex: 1;
+            padding: 121px;
+            background-color: #dcedc8;
+            /* Light green background for the text area */
+            color: #1b5e20;
+            /* Dark green text color */
+        }
+
+        .text-box h1 {
+            margin-top: 0;
+            color: #388e3c;
+            /* Slightly different green for the title */
+        }
+
+        /* Style for the buttons */
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .voice-button,
+        .translate-button {
+            padding: 10px 15px;
+            background-color: #388e3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .voice-button:hover,
+        .translate-button:hover {
+            background-color: #2e7d32;
+        }
+
+        .select-lang {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #388e3c;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="image-box">
+            <div class="sketchfab-embed-wrapper">
+                <iframe title="Aloe vera plant" frameborder="0" allowfullscreen mozallowfullscreen="true"
+                    webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
+                    execution-while-out-of-viewport execution-while-not-rendered web-share
+                    src="https://sketchfab.com/models/66c6699e50ab4863989777f920a981dd/embed"></iframe>
+            </div>
+        </div>
+        <div class="text-box">
+            <h1>ALOEVERA </h1>
+            <p id="text-content">
+                <b>Common Name: </b>Aloevera <br><br>
+                <b>Botanical Name:</b> Aloe barbadensis miller<br><br>
+                <b>Habitat:</b> Aloe vera thrives in dry, sunny climates with well-draining soil, native to arid
+                regions.<br><br>
+                <b>Medicinal Uses:</b>Aloe vera aids in healing burns, skin conditions, digestion, and has
+                anti-inflammatory properties..<br><br>
+                <b>Methods of Cultivation:</b> Aloe vera grows best in well-draining soil, full sun, minimal water, and
+                can be propagated by offsets or seeds.
+            </p>
+
+            <!-- Button to trigger the voice assistant and translation -->
+            <div class="button-container">
+                <button class="voice-button" onclick="readTextOnce()">Listen to Text</button>
+                <button class="translate-button" onclick="translateText()">Translate</button>
+
+                <!-- Language selection dropdown -->
+                <select id="language" class="select-lang">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="bn">Bengali</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to read the text content aloud using Web Speech API
+        function readTextOnce() {
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+
+            const text = document.getElementById('text-content').innerText; // Get the text from the paragraph
+            const speech = new SpeechSynthesisUtterance(text); // Create a new SpeechSynthesisUtterance object
+
+            const lang = document.getElementById('language').value; // Get the selected language
+            speech.lang = lang; // Set the language for speech synthesis
+            speech.pitch = 1; // Adjust the pitch (1 is normal)
+            speech.rate = 1; // Adjust the rate of speech (1 is normal)
+
+            window.speechSynthesis.speak(speech); // Speak the text
+
+            // Stop speech synthesis after it's done
+            speech.onend = function () {
+                window.speechSynthesis.cancel(); // Ensure the speech ends and doesn't repeat
+            };
+        }
+
+        // Function to translate the text content
+        async function translateText() {
+            const text = document.getElementById('text-content').innerText; // Get the text from the paragraph
+            const lang = document.getElementById('language').value; // Get the selected language
+
+            const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${lang}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const translatedText = data.responseData.translatedText;
+
+                // Update the paragraph with translated text
+                document.getElementById('text-content').innerText = translatedText;
+            } catch (error) {
+                console.error("Translation failed:", error);
+            }
+        }
+    </script>
+</body>
+
+</html>
